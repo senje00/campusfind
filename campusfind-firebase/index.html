@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusFind — Lost & Found</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <span class="brand-icon">◈</span>
+      <span class="brand-name">CampusFind</span>
+    </div>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">Home</a>
+      <a href="pages/report.html" class="nav-link">Report Item</a>
+      <a href="pages/browse.html" class="nav-link">Browse</a>
+      <a href="pages/admin.html" class="nav-link nav-admin">Admin</a>
+    </div>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-content">
+      <div class="hero-badge">Smart Campus System</div>
+      <h1 class="hero-title">Lost something?<br/><em>Find it here.</em></h1>
+      <p class="hero-sub">The campus-wide platform to report, search, and reclaim lost items — fast, free, and always on.</p>
+      <div class="hero-actions">
+        <a href="pages/report.html?type=lost" class="btn btn-primary">Report Lost Item</a>
+        <a href="pages/report.html?type=found" class="btn btn-outline">I Found Something</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="floating-card fc1"><span class="fc-icon">🎒</span><span class="fc-label">Backpack — Found</span><span class="fc-loc">Library Block A</span></div>
+      <div class="floating-card fc2"><span class="fc-icon">📱</span><span class="fc-label">Phone — Lost</span><span class="fc-loc">Lecture Hall 3</span></div>
+      <div class="floating-card fc3"><span class="fc-icon">🪪</span><span class="fc-label">ID Card — Found</span><span class="fc-loc">Cafeteria</span></div>
+      <div class="floating-card fc4"><span class="fc-icon">🔑</span><span class="fc-label">Keys — Lost</span><span class="fc-loc">Sports Complex</span></div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-bar">
+    <div class="stat-item" id="stat-total"><span class="stat-num" data-target="0">0</span><span class="stat-label">Items Reported</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" id="stat-found"><span class="stat-num" data-target="0">0</span><span class="stat-label">Items Recovered</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" id="stat-lost"><span class="stat-num" data-target="0">0</span><span class="stat-label">Items Still Lost</span></div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" id="stat-matches"><span class="stat-num" data-target="0">0</span><span class="stat-label">Matches Made</span></div>
+  </section>
+
+  <!-- RECENT ITEMS -->
+  <section class="recent-section">
+    <div class="section-header">
+      <h2 class="section-title">Recent Reports</h2>
+      <a href="pages/browse.html" class="see-all">View all →</a>
+    </div>
+    <div class="items-grid" id="recentGrid">
+      <div class="empty-state">No items reported yet. <a href="pages/report.html">Be the first →</a></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <h2 class="section-title centered">How It Works</h2>
+    <div class="steps-row">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">📝</div>
+        <h3>Report</h3>
+        <p>Submit a lost or found item report with a description, location, category and optional photo.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">🔍</div>
+        <h3>Match</h3>
+        <p>The system automatically scans existing reports for keyword matches and flags potential pairs.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🤝</div>
+        <h3>Recover</h3>
+        <p>Contact the finder or owner through the platform and arrange to reclaim your item on campus.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="brand-name">◈ CampusFind</span>
+      <span class="footer-copy">Built for campus. Zero cost. Open to all.</span>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle"></h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/home.js"></script>
+  <script>requireAuth(); injectUserNav();</script>
+</body>
+</html>

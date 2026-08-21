@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse Items — CampusFind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-brand" style="text-decoration:none;">
+      <span class="brand-icon">◈</span>
+      <span class="brand-name">CampusFind</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="report.html" class="nav-link">Report Item</a>
+      <a href="browse.html" class="nav-link active">Browse</a>
+      <a href="admin.html" class="nav-link nav-admin">Admin</a>
+    </div>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </nav>
+
+  <div style="padding: 3rem 4rem;">
+    <div class="section-header">
+      <div>
+        <h1 class="page-title" style="margin-bottom:.25rem;">Browse All Items</h1>
+        <p style="color:var(--text2);font-size:.9rem;" id="resultCount">Loading...</p>
+      </div>
+      <a href="report.html" class="btn btn-primary btn-sm">+ Report Item</a>
+    </div>
+
+    <!-- Controls -->
+    <div class="browse-controls">
+      <input type="text" id="searchInput" placeholder="🔍  Search by keyword, location, category..." oninput="loadBrowseItems()"/>
+      <select id="catFilter" onchange="loadBrowseItems()">
+        <option value="all">All Categories</option>
+        <option>Electronics</option>
+        <option>Phone</option>
+        <option>Wallet/Purse</option>
+        <option>Keys</option>
+        <option>ID/Card</option>
+        <option>Bag/Backpack</option>
+        <option>Clothing</option>
+        <option>Books/Notes</option>
+        <option>Jewellery</option>
+        <option>Sports Equipment</option>
+        <option>Other</option>
+      </select>
+      <div class="filter-group">
+        <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">All</button>
+        <button class="filter-btn fl" id="filterLost" onclick="setFilter('lost')">🔴 Lost</button>
+        <button class="filter-btn ff" id="filterFound" onclick="setFilter('found')">🟢 Found</button>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="items-grid" id="browseGrid">
+      <div class="empty-state">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle"></h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/home.js"></script>
+  <script src="../js/browse.js"></script>
+  <script>requireAuth(); injectUserNav();</script>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CampusFind — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0e1a; --bg2: #0f1525; --bg3: #161d30;
+      --surface: #1a2236; --surface2: #1f2a40;
+      --border: #2a3550; --accent: #f0a500; --accent2: #e07b00;
+      --text: #e8edf5; --text2: #8a9bbf; --text3: #5a6b8a;
+      --radius: 12px; --radius-lg: 20px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 48px rgba(0,0,0,0.5);
+      --error: #ff4d6d; --success: #2dd4a0;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      background-image: linear-gradient(rgba(240,165,0,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(240,165,0,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    /* ── Brand bar ── */
+    .auth-wrap {
+      width: 100%; max-width: 480px;
+    }
+    .auth-brand {
+      display: flex; align-items: center; justify-content: center; gap: .6rem;
+      margin-bottom: 2rem; text-decoration: none;
+    }
+    .auth-brand-icon { font-size: 1.6rem; color: var(--accent); }
+    .auth-brand-name { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--text); }
+    /* ── Card ── */
+    .auth-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); padding: 2.25rem 2.25rem;
+      box-shadow: var(--shadow-lg);
+    }
+    .auth-title {
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.6rem;
+      margin-bottom: .4rem; color: var(--text);
+    }
+    .auth-sub { font-size: .9rem; color: var(--text2); margin-bottom: 1.75rem; }
+    /* ── Tabs ── */
+    .auth-tabs {
+      display: flex; gap: .25rem; background: var(--bg2);
+      border-radius: var(--radius); padding: .25rem;
+      margin-bottom: 1.75rem;
+    }
+    .auth-tab {
+      flex: 1; text-align: center; padding: .6rem;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: .85rem;
+      border-radius: 9px; cursor: pointer; border: none; background: transparent;
+      color: var(--text2); transition: all .2s; letter-spacing: .02em;
+    }
+    .auth-tab.active { background: var(--surface2); color: var(--accent); }
+    /* ── OAuth ── */
+    .oauth-row { display: flex; gap: .75rem; margin-bottom: 1.25rem; }
+    .oauth-btn {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: .5rem;
+      padding: .75rem; border-radius: var(--radius); border: 1.5px solid var(--border);
+      background: var(--bg2); color: var(--text2); font-size: .875rem; font-weight: 500;
+      cursor: pointer; transition: all .2s; font-family: 'DM Sans', sans-serif;
+    }
+    .oauth-btn:hover { border-color: var(--accent); color: var(--text); background: var(--surface2); }
+    .oauth-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .divider {
+      display: flex; align-items: center; gap: .75rem;
+      margin-bottom: 1.25rem; color: var(--text3); font-size: .8rem;
+    }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background: var(--border); }
+    /* ── Form ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-label {
+      display: block; font-size: .8rem; font-weight: 600;
+      color: var(--text2); margin-bottom: .4rem; letter-spacing: .04em; text-transform: uppercase;
+    }
+    .form-input {
+      width: 100%; padding: .75rem 1rem; border-radius: var(--radius);
+      border: 1.5px solid var(--border); background: var(--bg2);
+      color: var(--text); font-size: .95rem; font-family: 'DM Sans', sans-serif;
+      transition: border-color .2s; outline: none;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .form-input.error { border-color: var(--error); }
+    .form-input::placeholder { color: var(--text3); }
+    .pw-wrap { position: relative; }
+    .pw-toggle {
+      position: absolute; right: .875rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: var(--text3); cursor: pointer;
+      font-size: 1rem; padding: .25rem; display: flex; align-items: center;
+    }
+    .pw-toggle:hover { color: var(--text2); }
+    /* Password strength */
+    .pw-strength { margin-top: .5rem; display: flex; gap: .25rem; }
+    .pw-bar { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background .3s; }
+    .pw-bar.weak { background: var(--error); }
+    .pw-bar.medium { background: var(--accent); }
+    .pw-bar.strong { background: var(--success); }
+    .pw-hint { font-size: .75rem; color: var(--text3); margin-top: .35rem; }
+    /* ── OTP box ── */
+    .otp-group {
+      display: flex; gap: .5rem; justify-content: center; margin: 1rem 0;
+    }
+    .otp-digit {
+      width: 48px; height: 56px; text-align: center; font-size: 1.4rem; font-weight: 700;
+      font-family: 'Syne', sans-serif; border-radius: var(--radius);
+      border: 1.5px solid var(--border); background: var(--bg2); color: var(--text);
+      outline: none; transition: border-color .2s;
+    }
+    .otp-digit:focus { border-color: var(--accent); }
+    /* ── Buttons ── */
+    .btn-auth {
+      width: 100%; padding: .875rem; border-radius: var(--radius);
+      background: var(--accent); color: #0a0e1a;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1rem;
+      border: none; cursor: pointer; transition: all .2s; letter-spacing: .02em;
+      margin-top: .5rem;
+    }
+    .btn-auth:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(240,165,0,.25); }
+    .btn-auth:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: transparent; color: var(--text2); border: 1.5px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: transparent; }
+    /* ── Links & misc ── */
+    .auth-link { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+    .auth-link:hover { text-decoration: underline; }
+    .msg-error {
+      background: rgba(255,77,109,.1); border: 1px solid rgba(255,77,109,.3);
+      color: var(--error); padding: .75rem 1rem; border-radius: var(--radius);
+      font-size: .875rem; margin-bottom: 1rem; display: none;
+    }
+    .msg-success {
+      background: rgba(45,212,160,.1); border: 1px solid rgba(45,212,160,.3);
+      color: var(--success); padding: .75rem 1rem; border-radius: var(--radius);
+      font-size: .875rem; margin-bottom: 1rem; display: none;
+    }
+    .resend-row { text-align: center; font-size: .85rem; color: var(--text2); margin-top: .75rem; }
+    .step-back { color: var(--text2); font-size: .85rem; cursor: pointer; display: inline-flex; align-items: center; gap: .35rem; margin-bottom: 1.25rem; }
+    .step-back:hover { color: var(--accent); }
+    /* ── Phone/email toggle ── */
+    .contact-tabs { display: flex; gap: .25rem; margin-bottom: 1rem; }
+    .contact-tab {
+      flex: 1; padding: .5rem; text-align: center; font-size: .8rem; font-weight: 600;
+      border-radius: 8px; cursor: pointer; border: 1.5px solid var(--border);
+      background: transparent; color: var(--text2); transition: all .2s; font-family: 'DM Sans', sans-serif;
+    }
+    .contact-tab.active { border-color: var(--accent); color: var(--accent); background: rgba(240,165,0,.06); }
+    /* ── OTP demo badge ── */
+    .otp-demo-badge {
+      background: rgba(240,165,0,.12); border: 1px dashed rgba(240,165,0,.4);
+      color: var(--accent); padding: .6rem 1rem; border-radius: var(--radius);
+      font-size: .825rem; text-align: center; margin-bottom: 1rem; line-height: 1.5;
+    }
+    .otp-demo-badge strong { font-family: 'Syne', sans-serif; font-size: 1.1rem; letter-spacing: .1em; }
+    /* ── Step indicator ── */
+    .step-dots { display: flex; gap: .35rem; justify-content: center; margin-bottom: 1.5rem; }
+    .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: background .3s; }
+    .step-dot.active { background: var(--accent); width: 22px; border-radius: 4px; }
+    /* ── Animations ── */
+    @keyframes fadeSlide { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .auth-card { animation: fadeSlide .35s ease; }
+    .view { display: none; }
+    .view.active { display: block; animation: fadeSlide .25s ease; }
+  </style>
+</head>
+<body>
+<div class="auth-wrap">
+  <a href="index.html" class="auth-brand">
+    <span class="auth-brand-icon">◈</span>
+    <span class="auth-brand-name">CampusFind</span>
+  </a>
+
+  <div class="auth-card" id="authCard">
+
+    <!-- ══ VIEW: LOGIN ══════════════════════════════════════ -->
+    <div class="view active" id="viewLogin">
+      <h2 class="auth-title">Welcome back</h2>
+      <p class="auth-sub">Sign in to access CampusFind</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login','email')">Email / Phone</button>
+        <button class="auth-tab" onclick="switchTab('login','oauth')">Social</button>
+      </div>
+      <div id="login-email-section">
+        <div id="loginErr" class="msg-error"></div>
+        <div class="form-group">
+          <label class="form-label">Email, Phone or Username</label>
+          <input class="form-input" id="loginIdentifier" type="text" placeholder="e.g. kofi@utas.edu.gh"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="loginPassword" type="password" placeholder="Your password"/>
+            <button class="pw-toggle" type="button" onclick="togglePw('loginPassword', this)">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right; margin-bottom:1rem; font-size:.85rem;">
+          <span class="auth-link" onclick="goTo('viewForgot')">Forgot password?</span>
+        </div>
+        <button class="btn-auth" onclick="handleLogin()">Continue →</button>
+        <p style="text-align:center; font-size:.85rem; color:var(--text2); margin-top:1.25rem;">
+          No account? <span class="auth-link" onclick="goTo('viewSignup')">Sign up free</span>
+        </p>
+      </div>
+      <div id="login-oauth-section" style="display:none;">
+        <div id="loginOauthErr" class="msg-error"></div>
+        <div class="oauth-row">
+          <button class="oauth-btn" onclick="handleGoogle('login')">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button class="oauth-btn" onclick="alert('Apple sign-in needs extra setup — see FIREBASE_SETUP.md')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Apple
+          </button>
+        </div>
+        <p style="text-align:center; font-size:.85rem; color:var(--text2); margin-top:1rem;">
+          No account? <span class="auth-link" onclick="goTo('viewSignup')">Sign up free</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: LOGIN OTP ══════════════════════════════════ -->
+    <div class="view" id="viewLoginOtp">
+      <span class="step-back" onclick="goTo('viewLogin')">← Back</span>
+      <h2 class="auth-title">Verify it's you</h2>
+      <p class="auth-sub" id="loginOtpSub">A 6-digit code was sent to your contact.</p>
+      <div id="loginOtpDemo" class="otp-demo-badge" style="display:none;"></div>
+      <div id="loginOtpErr" class="msg-error"></div>
+      <div class="otp-group">
+        <input class="otp-digit" maxlength="1" id="o0" oninput="otpMove(this,1)" onkeydown="otpBack(event,this,null)"/>
+        <input class="otp-digit" maxlength="1" id="o1" oninput="otpMove(this,2)" onkeydown="otpBack(event,this,0)"/>
+        <input class="otp-digit" maxlength="1" id="o2" oninput="otpMove(this,3)" onkeydown="otpBack(event,this,1)"/>
+        <input class="otp-digit" maxlength="1" id="o3" oninput="otpMove(this,4)" onkeydown="otpBack(event,this,2)"/>
+        <input class="otp-digit" maxlength="1" id="o4" oninput="otpMove(this,5)" onkeydown="otpBack(event,this,3)"/>
+        <input class="otp-digit" maxlength="1" id="o5" oninput="otpMove(this,-1)" onkeydown="otpBack(event,this,4)"/>
+      </div>
+      <button class="btn-auth" onclick="handleLoginOtp()">Verify & Sign In</button>
+      <div class="resend-row">Didn't receive it? <span class="auth-link" id="loginResend" onclick="resendLoginOtp()">Resend</span> <span id="loginResendTimer"></span></div>
+    </div>
+
+    <!-- ══ VIEW: SIGN UP ════════════════════════════════════ -->
+    <div class="view" id="viewSignup">
+      <h2 class="auth-title">Create account</h2>
+      <p class="auth-sub">Join CampusFind — free for all students</p>
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('signup','email')">Email / Phone</button>
+        <button class="auth-tab" onclick="switchTab('signup','oauth')">Social</button>
+      </div>
+      <div id="signup-email-section">
+        <div id="signupErr" class="msg-error"></div>
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input class="form-input" id="signupName" type="text" placeholder="e.g. Kofi Mensah"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Username</label>
+          <input class="form-input" id="signupUsername" type="text" placeholder="e.g. kofi_mensah" oninput="checkUsername(this)"/>
+          <div id="usernameHint" class="pw-hint"></div>
+        </div>
+        <div class="contact-tabs">
+          <button class="contact-tab active" id="ctEmail" onclick="setContactMode('email')">📧 Email</button>
+          <button class="contact-tab" id="ctPhone" onclick="setContactMode('phone')">📱 Phone</button>
+        </div>
+        <div class="form-group" id="emailGroup">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" id="signupEmail" type="email" placeholder="e.g. kofi@utas.edu.gh"/>
+        </div>
+        <div class="form-group" id="phoneGroup" style="display:none;">
+          <label class="form-label">Phone Number</label>
+          <input class="form-input" id="signupPhone" type="tel" placeholder="e.g. 0244123456"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="signupPassword" type="password" placeholder="Min 8 chars, letters, numbers & symbol" oninput="checkPwStrength(this)"/>
+            <button class="pw-toggle" type="button" onclick="togglePw('signupPassword', this)">👁</button>
+          </div>
+          <div class="pw-strength">
+            <div class="pw-bar" id="pwBar1"></div>
+            <div class="pw-bar" id="pwBar2"></div>
+            <div class="pw-bar" id="pwBar3"></div>
+            <div class="pw-bar" id="pwBar4"></div>
+          </div>
+          <div class="pw-hint" id="pwHint">Must be 8+ characters with letters, numbers and at least 1 symbol</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="pw-wrap">
+            <input class="form-input" id="signupConfirm" type="password" placeholder="Re-enter your password"/>
+            <button class="pw-toggle" type="button" onclick="togglePw('signupConfirm', this)">👁</button>
+          </div>
+        </div>
+        <button class="btn-auth" onclick="handleSignup()">Send Verification Code →</button>
+        <p style="text-align:center; font-size:.85rem; color:var(--text2); margin-top:1.25rem;">
+          Have an account? <span class="auth-link" onclick="goTo('viewLogin')">Sign in</span>
+        </p>
+      </div>
+      <div id="signup-oauth-section" style="display:none;">
+        <div id="signupOauthErr" class="msg-error"></div>
+        <div class="oauth-row">
+          <button class="oauth-btn" onclick="handleGoogle('signup')">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84z" fill="#EA4335"/></svg>
+            Continue with Google
+          </button>
+        </div>
+        <div class="oauth-row">
+          <button class="oauth-btn" onclick="alert('Apple sign-in needs extra setup — see FIREBASE_SETUP.md')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Continue with Apple
+          </button>
+        </div>
+        <p style="text-align:center; font-size:.85rem; color:var(--text2); margin-top:1rem;">
+          Have an account? <span class="auth-link" onclick="goTo('viewLogin')">Sign in</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- ══ VIEW: SIGNUP OTP ═════════════════════════════════ -->
+    <div class="view" id="viewSignupOtp">
+      <span class="step-back" onclick="goTo('viewSignup')">← Back</span>
+      <h2 class="auth-title">Check your inbox</h2>
+      <p class="auth-sub" id="signupOtpSub">Enter the 6-digit code to verify your account.</p>
+      <div id="signupOtpDemo" class="otp-demo-badge" style="display:none;"></div>
+      <div id="signupOtpErr" class="msg-error"></div>
+      <div class="otp-group">
+        <input class="otp-digit" maxlength="1" id="s0" oninput="otpMove(this,1,'s')" onkeydown="otpBack(event,this,null,'s')"/>
+        <input class="otp-digit" maxlength="1" id="s1" oninput="otpMove(this,2,'s')" onkeydown="otpBack(event,this,0,'s')"/>
+        <input class="otp-digit" maxlength="1" id="s2" oninput="otpMove(this,3,'s')" onkeydown="otpBack(event,this,1,'s')"/>
+        <input class="otp-digit" maxlength="1" id="s3" oninput="otpMove(this,4,'s')" onkeydown="otpBack(event,this,2,'s')"/>
+        <input class="otp-digit" maxlength="1" id="s4" oninput="otpMove(this,5,'s')" onkeydown="otpBack(event,this,3,'s')"/>
+        <input class="otp-digit" maxlength="1" id="s5" oninput="otpMove(this,-1,'s')" onkeydown="otpBack(event,this,4,'s')"/>
+      </div>
+      <button class="btn-auth" onclick="handleSignupOtp()">Verify & Create Account</button>
+      <div class="resend-row">Didn't receive it? <span class="auth-link" id="signupResend" onclick="resendSignupOtp()">Resend</span> <span id="signupResendTimer"></span></div>
+    </div>
+
+    <!-- ══ VIEW: FORGOT PASSWORD ════════════════════════════ -->
+    <div class="view" id="viewForgot">
+      <span class="step-back" onclick="goTo('viewLogin')">← Back to sign in</span>
+      <h2 class="auth-title">Reset password</h2>
+      <p class="auth-sub">Enter the email or phone on your account and we'll send a reset code.</p>
+      <div id="forgotErr" class="msg-error"></div>
+      <div id="forgotSuccess" class="msg-success"></div>
+      <div class="form-group">
+        <label class="form-label">Email or Phone</label>
+        <input class="form-input" id="forgotIdentifier" type="text" placeholder="e.g. kofi@utas.edu.gh or 0244123456"/>
+      </div>
+      <button class="btn-auth" onclick="handleForgot()">Send Reset Code →</button>
+    </div>
+
+    <!-- ══ VIEW: RESET OTP ══════════════════════════════════ -->
+    <div class="view" id="viewResetOtp">
+      <span class="step-back" onclick="goTo('viewForgot')">← Back</span>
+      <h2 class="auth-title">Enter reset code</h2>
+      <p class="auth-sub" id="resetOtpSub">Enter the 6-digit code sent to your contact.</p>
+      <div id="resetOtpDemo" class="otp-demo-badge" style="display:none;"></div>
+      <div id="resetOtpErr" class="msg-error"></div>
+      <div class="otp-group">
+        <input class="otp-digit" maxlength="1" id="r0" oninput="otpMove(this,1,'r')" onkeydown="otpBack(event,this,null,'r')"/>
+        <input class="otp-digit" maxlength="1" id="r1" oninput="otpMove(this,2,'r')" onkeydown="otpBack(event,this,0,'r')"/>
+        <input class="otp-digit" maxlength="1" id="r2" oninput="otpMove(this,3,'r')" onkeydown="otpBack(event,this,1,'r')"/>
+        <input class="otp-digit" maxlength="1" id="r3" oninput="otpMove(this,4,'r')" onkeydown="otpBack(event,this,2,'r')"/>
+        <input class="otp-digit" maxlength="1" id="r4" oninput="otpMove(this,5,'r')" onkeydown="otpBack(event,this,3,'r')"/>
+        <input class="otp-digit" maxlength="1" id="r5" oninput="otpMove(this,-1,'r')" onkeydown="otpBack(event,this,4,'r')"/>
+      </div>
+      <button class="btn-auth" onclick="handleResetOtp()">Verify Code →</button>
+      <div class="resend-row">Didn't receive it? <span class="auth-link" onclick="handleForgotResend()">Resend</span></div>
+    </div>
+
+    <!-- ══ VIEW: NEW PASSWORD ═══════════════════════════════ -->
+    <div class="view" id="viewNewPw">
+      <h2 class="auth-title">New password</h2>
+      <p class="auth-sub">Set a strong new password for your account.</p>
+      <div id="newPwErr" class="msg-error"></div>
+      <div class="form-group">
+        <label class="form-label">New Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" id="newPassword" type="password" placeholder="Min 8 chars, letters, numbers & symbol" oninput="checkPwStrength2(this)"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('newPassword', this)">👁</button>
+        </div>
+        <div class="pw-strength">
+          <div class="pw-bar" id="pwBar1b"></div>
+          <div class="pw-bar" id="pwBar2b"></div>
+          <div class="pw-bar" id="pwBar3b"></div>
+          <div class="pw-bar" id="pwBar4b"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirm New Password</label>
+        <div class="pw-wrap">
+          <input class="form-input" id="newPasswordConfirm" type="password" placeholder="Re-enter new password"/>
+          <button class="pw-toggle" type="button" onclick="togglePw('newPasswordConfirm', this)">👁</button>
+        </div>
+      </div>
+      <button class="btn-auth" onclick="handleNewPw()">Update Password</button>
+    </div>
+
+  </div><!-- /auth-card -->
+</div><!-- /auth-wrap -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────
+let _contactMode = 'email'; // kept for the UI toggle, phone accounts aren't wired to Firebase Auth
+
+// ── Redirect if already logged in ───────────────────────────
+auth.onAuthStateChanged((user) => {
+  if (user) window.location.href = 'index.html';
+});
+
+// ── View navigation ──────────────────────────────────────────
+function goTo(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(viewId).classList.add('active');
+  clearAllErrors();
+}
+
+function clearAllErrors() {
+  document.querySelectorAll('.msg-error, .msg-success').forEach(el => el.style.display = 'none');
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+function showSucc(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg; el.style.display = 'block';
+}
+
+// ── Tab switcher (email vs oauth within login/signup) ────────
+function switchTab(form, mode) {
+  const tabs = document.querySelectorAll(`#view${form.charAt(0).toUpperCase()+form.slice(1)} .auth-tab`);
+  tabs.forEach((t,i) => t.classList.toggle('active', (mode==='email'&&i===0)||(mode==='oauth'&&i===1)));
+  document.getElementById(`${form}-email-section`).style.display = mode === 'email' ? 'block' : 'none';
+  document.getElementById(`${form}-oauth-section`).style.display = mode === 'oauth' ? 'block' : 'none';
+}
+
+// ── Contact mode (email vs phone) — email is what actually authenticates ──
+function setContactMode(mode) {
+  _contactMode = mode;
+  document.getElementById('ctEmail').classList.toggle('active', mode==='email');
+  document.getElementById('ctPhone').classList.toggle('active', mode==='phone');
+  document.getElementById('emailGroup').style.display = mode==='email' ? 'block' : 'none';
+  document.getElementById('phoneGroup').style.display = mode==='phone' ? 'block' : 'none';
+}
+
+// ── Toggle password visibility ───────────────────────────────
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+// ── Username availability check ──────────────────────────────
+let _usernameCheckTimer = null;
+function checkUsername(el) {
+  const v = el.value.trim();
+  const hint = document.getElementById('usernameHint');
+  if (!v) { hint.textContent = ''; return; }
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(v)) {
+    hint.style.color = 'var(--error)'; hint.textContent = '3-20 characters: letters, numbers, underscores only';
+    return;
+  }
+  hint.style.color = 'var(--text3)'; hint.textContent = 'Checking availability…';
+  clearTimeout(_usernameCheckTimer);
+  _usernameCheckTimer = setTimeout(async () => {
+    const existing = await getUserByUsername(v);
+    hint.style.color = existing ? 'var(--error)' : 'var(--success)';
+    hint.textContent = existing ? '✕ Username taken' : '✓ Username available';
+  }, 400);
+}
+
+// ── Password strength meter ───────────────────────────────────
+function getPwStrength(pwd) {
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (/[a-zA-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+  return score;
+}
+function applyStrengthBars(score, suffix='') {
+  const levels = ['weak','weak','medium','strong'];
+  for (let i = 1; i <= 4; i++) {
+    const bar = document.getElementById('pwBar'+i+suffix);
+    if (!bar) continue;
+    bar.className = 'pw-bar' + (i <= score ? ' ' + levels[Math.min(score-1,3)] : '');
+  }
+}
+function checkPwStrength(el) { applyStrengthBars(getPwStrength(el.value)); }
+
+// ══ LOGIN FLOW ════════════════════════════════════════════════
+async function handleLogin() {
+  const identifier = document.getElementById('loginIdentifier').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!identifier) { showErr('loginErr', 'Please enter your email or username.'); return; }
+  if (!password) { showErr('loginErr', 'Please enter your password.'); return; }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const result = await loginUser(identifier, password);
+  btn.disabled = false; btn.textContent = 'Continue →';
+  if (!result.ok) { showErr('loginErr', result.error); return; }
+  window.location.href = 'index.html';
+}
+
+// ══ SIGNUP FLOW ═══════════════════════════════════════════════
+async function handleSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const username = document.getElementById('signupUsername').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const password = document.getElementById('signupPassword').value;
+  const confirm = document.getElementById('signupConfirm').value;
+
+  if (!name) { showErr('signupErr', 'Please enter your full name.'); return; }
+  if (!username || !/^[a-zA-Z0-9_]{3,20}$/.test(username)) { showErr('signupErr', 'Username must be 3-20 characters (letters, numbers, underscores).'); return; }
+  if (_contactMode === 'phone') { showErr('signupErr', 'Phone sign-up needs Firebase Phone Auth (SMS) set up separately — please sign up with email for now.'); return; }
+  if (!email) { showErr('signupErr', 'Please enter your email address.'); return; }
+  const pwErr = validatePassword(password);
+  if (pwErr) { showErr('signupErr', pwErr); return; }
+  if (password !== confirm) { showErr('signupErr', 'Passwords do not match.'); return; }
+
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const result = await registerUser({ displayName: name, username, email, password });
+  btn.disabled = false; btn.textContent = 'Create Account →';
+  if (!result.ok) { showErr('signupErr', result.error); return; }
+  window.location.href = 'index.html';
+}
+
+// ══ GOOGLE SIGN-IN ════════════════════════════════════════════
+async function handleGoogle(mode) {
+  const errId = mode === 'login' ? 'loginOauthErr' : 'signupOauthErr';
+  const result = await loginWithGoogle();
+  if (!result.ok) { showErr(errId, result.error); return; }
+  window.location.href = 'index.html';
+}
+
+// ══ FORGOT PASSWORD ═══════════════════════════════════════════
+// Firebase emails the user a secure reset link directly — no
+// custom OTP screen needed.
+async function handleForgot() {
+  const identifier = document.getElementById('forgotIdentifier').value.trim();
+  if (!identifier) { showErr('forgotErr', 'Please enter your email or username.'); return; }
+  const btn = event.target;
+  btn.disabled = true; btn.textContent = 'Sending…';
+  const result = await sendPasswordReset(identifier);
+  btn.disabled = false; btn.textContent = 'Send Reset Link →';
+  if (!result.ok) { showErr('forgotErr', result.error); return; }
+  document.getElementById('forgotErr').style.display = 'none';
+  showSucc('forgotSuccess', '✓ Check your inbox — we sent a password reset link.');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── users/{uid} ──────────────────────────────────────────
+    // Public read (needed so the login/signup screen can look up a
+    // username -> email before the visitor is authenticated).
+    // Only the owner can create/edit their own profile document.
+    match /users/{uid} {
+      allow read: if true;
+      allow create: if request.auth != null && request.auth.uid == uid;
+      allow update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // ── items/{itemId} ───────────────────────────────────────
+    // Lost & found listings: readable by anyone, writable by any
+    // signed-in user. This mirrors the original app (any logged-in
+    // user can report/claim/delete via the UI). If you want ONLY
+    // the admin panel to delete/claim, add a custom claim (see
+    // FIREBASE_SETUP.md) and swap the update/delete line for:
+    //   allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    //
+    // No Firebase Storage is used (it now requires the paid Blaze
+    // plan) — photos are compressed client-side and stored inline
+    // on the document, so writes are capped well under Firestore's
+    // 1MB document limit as a safety net against a bypassed client.
+    match /items/{itemId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                     && (!('photo' in request.resource.data)
+                         || request.resource.data.photo == null
+                         || request.resource.data.photo.size() < 900000);
+      allow update, delete: if request.auth != null;
+    }
+  }
+}

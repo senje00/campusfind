@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Report Item — CampusFind</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-brand" style="text-decoration:none;">
+      <span class="brand-icon">◈</span>
+      <span class="brand-name">CampusFind</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html" class="nav-link">Home</a>
+      <a href="report.html" class="nav-link active">Report Item</a>
+      <a href="browse.html" class="nav-link">Browse</a>
+      <a href="admin.html" class="nav-link nav-admin">Admin</a>
+    </div>
+    <button class="nav-toggle" onclick="toggleNav()">☰</button>
+  </nav>
+
+  <div class="page-wrapper">
+    <h1 class="page-title">Report an Item</h1>
+    <p class="page-sub">Fill in the details below. The more you describe, the better the match system works.</p>
+
+    <!-- Type Toggle -->
+    <div class="type-toggle">
+      <button class="type-btn" id="btnLost" onclick="setType('lost')">🔴 I Lost Something</button>
+      <button class="type-btn" id="btnFound" onclick="setType('found')">🟢 I Found Something</button>
+    </div>
+
+    <div class="form-card">
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Item Title *</label>
+          <input type="text" id="itemTitle" placeholder="e.g. Black Samsung Galaxy A54, Blue Backpack..."/>
+        </div>
+
+        <div class="form-group">
+          <label>Category *</label>
+          <select id="itemCategory">
+            <option value="">Select category</option>
+            <option>Electronics</option>
+            <option>Phone</option>
+            <option>Wallet/Purse</option>
+            <option>Keys</option>
+            <option>ID/Card</option>
+            <option>Bag/Backpack</option>
+            <option>Clothing</option>
+            <option>Books/Notes</option>
+            <option>Jewellery</option>
+            <option>Sports Equipment</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Location *</label>
+          <input type="text" id="itemLocation" placeholder="e.g. Library Block A, Cafeteria..."/>
+        </div>
+
+        <div class="form-group">
+          <label>Date *</label>
+          <input type="date" id="itemDate"/>
+        </div>
+
+        <div class="form-group">
+          <label>Your Contact (optional)</label>
+          <input type="text" id="itemContact" placeholder="Phone number or email"/>
+        </div>
+
+        <div class="form-group full">
+          <label>Description *</label>
+          <textarea id="itemDesc" placeholder="Describe the item in detail — colour, size, brand, any unique marks..."></textarea>
+        </div>
+
+        <div class="form-group full">
+          <label>Photo (optional)</label>
+          <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+            <div id="uploadPrompt">📷 Click to upload a photo</div>
+            <input type="file" id="photoInput" accept="image/*" onchange="handlePhoto(event)"/>
+            <img id="photoPreview" class="photo-preview" alt="Preview"/>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-outline" onclick="resetForm()">Clear</button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitReport()">Submit Report</button>
+      </div>
+    </div>
+
+    <!-- Match Result -->
+    <div id="matchResult" style="margin-top:2rem;display:none;">
+      <h3 style="font-family:'Syne',sans-serif;font-weight:800;margin-bottom:1rem;">🔗 Possible Matches Found</h3>
+      <div id="matchGrid" class="items-grid"></div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle"></h3>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="../js/firebase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/home.js"></script>
+  <script src="../js/report.js"></script>
+  <script>requireAuth(); injectUserNav();</script>
+</body>
+</html>
