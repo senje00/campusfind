@@ -165,10 +165,33 @@ function logoutUser() {
 }
 
 // ── Inject nav user info ────────────────────────────────────────
+// function injectUserNav() {
+//   const user = currentUserProfile;
+//   const navLinks = document.querySelector('.nav-links');
+//   if (!navLinks || !user) return;
+//   const existing = navLinks.querySelector('.nav-user-btn');
+//   if (existing) existing.remove();
+//   const userBtn = document.createElement('div');
+//   userBtn.className = 'nav-user-btn';
+//   userBtn.innerHTML = `
+//     <div class="nav-avatar">${(user.displayName || user.username || 'U')[0].toUpperCase()}</div>
+//     <span class="nav-username">${user.displayName || user.username}</span>
+//     <div class="nav-user-dropdown">
+//       <div class="nav-dropdown-name">${user.displayName || user.username}</div>
+//       <div class="nav-dropdown-email">${user.email || '@' + user.username}</div>
+//       <hr style="border-color:var(--border);margin:.5rem 0;">
+//       <button onclick="logoutUser()" class="nav-dropdown-signout">Sign Out</button>
+//     </div>
+//   `;
+//   navLinks.appendChild(userBtn);
+// }
+
+// ── Inject nav user info ─────────────────────────────────────
 function injectUserNav() {
-  const user = currentUserProfile;
+  const user = getCurrentUser();
   const navLinks = document.querySelector('.nav-links');
   if (!navLinks || !user) return;
+  // Remove existing user btn if any
   const existing = navLinks.querySelector('.nav-user-btn');
   if (existing) existing.remove();
   const userBtn = document.createElement('div');
@@ -178,10 +201,11 @@ function injectUserNav() {
     <span class="nav-username">${user.displayName || user.username}</span>
     <div class="nav-user-dropdown">
       <div class="nav-dropdown-name">${user.displayName || user.username}</div>
-      <div class="nav-dropdown-email">${user.email || '@' + user.username}</div>
+      <div class="nav-dropdown-email">${user.email || user.phone || '@' + user.username}</div>
       <hr style="border-color:var(--border);margin:.5rem 0;">
       <button onclick="logoutUser()" class="nav-dropdown-signout">Sign Out</button>
     </div>
   `;
   navLinks.appendChild(userBtn);
 }
+
