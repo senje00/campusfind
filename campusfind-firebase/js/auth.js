@@ -8,16 +8,6 @@
 // collection, keyed by the Firebase Auth uid, since Firebase Auth
 // itself only stores email/password/provider info.
 
-// ── CampusFind Auth Layer (Firebase Authentication + Firestore) ─
-// Real accounts, real password hashing/storage, and real password-
-// reset emails are all handled by Firebase — none of it is custom
-// code anymore. This file just adapts Firebase's API to the same
-// function names the rest of the app (and auth.html) already calls.
-//
-// Profile data (displayName, username) lives in a "users" Firestore
-// collection, keyed by the Firebase Auth uid, since Firebase Auth
-// itself only stores email/password/provider info.
-
 let currentUserProfile = null; // cached profile of the signed-in user
 
 // ── Profile helpers ─────────────────────────────────────────────
@@ -68,8 +58,7 @@ function friendlyAuthError(e) {
     'auth/invalid-credential': 'Incorrect email/username or password.',
     'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
     'auth/popup-closed-by-user': 'Sign-in was cancelled.',
-    'auth/network-request-failed': 'Network error — check your connection.',
-    'auth/operation-not-allowed': 'This sign-in method isn\'t turned on yet in Firebase — go to Authentication → Sign-in method in the console and enable it.'
+    'auth/network-request-failed': 'Network error — check your connection.'
   };
   return map[e.code] || (e.message || 'Something went wrong. Please try again.');
 }
@@ -161,19 +150,7 @@ function requireAuth(onReady) {
       window.location.href = (window.location.pathname.includes('/pages/') ? '../' : '') + 'auth.html';
       return;
     }
-    try {
-      await loadCurrentUserProfile(user.uid);
-    } catch (e) {
-      console.error('Could not load user profile from Firestore:', e);
-    }
-    if (!currentUserProfile) {
-      // No Firestore profile doc (missing, or the read failed/was denied) —
-      // fall back to what Firebase Auth itself knows, so the nav still
-      // shows a name + logout instead of silently disappearing.
-      const fallbackName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
-      currentUserProfile = { id: user.uid, displayName: fallbackName, username: fallbackName, email: user.email };
-      console.warn('Using fallback profile (no Firestore users/ doc found for this account).');
-    }
+    await loadCurrentUserProfile(user.uid);
     injectUserNav();
     if (typeof onReady === 'function') onReady();
   });
@@ -207,7 +184,5 @@ function injectUserNav() {
     </div>
   `;
   navLinks.appendChild(userBtn);
-}
-
 }
 
